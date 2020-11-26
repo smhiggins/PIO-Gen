@@ -17,12 +17,12 @@ else:
     output_path = sys.argv[2]
     alpha = float(sys.argv[3])
     cluster_size = int(sys.argv[4])
-num_workers = 1000
-phase_one_epochs = 100
-homing_phase_epochs = 100
-
+num_workers = 200
+search_phase_epochs = 50
+homing_phase_epochs = 50
 anneal_phase_epochs = 0
-
+cycles = 5
+cluster_size = 5
 # extract dense matrix from tab delimited square matrix
 with open(input_path, 'r') as f:
     contact_matrix = np.genfromtxt(f, delimiter="\t")
@@ -63,63 +63,83 @@ if __name__ == '__main__':
 
     workers = []
     length = len(distance_map)
-    search_score = np.zeros(ceil(length / cluster_size))
-    best_global = np.zeros([len(distance_map), 3])
-    homing_score = 0
-    anneal_score = 0
+
     for i in range(num_workers):
         workers.append(Pigeon(length, cluster_size))
 
     with Pool(os.cpu_count()) as p:
-        for i in range(0, phase_one_epochs):
-            partial_search = partial(wrapper, distance_map, best_global, i)
-            results = np.asarray(p.map(partial_search, workers))
-            for j in range(num_workers):
-                iteration = 0
-                for k in range(0, length, cluster_size):
-                    if results[j][0][iteration] > search_score[iteration]:
-                        search_score[iteration] = results[j][0][iteration]
-                        best_global[k:k+cluster_size] = results[j][1][k:k+cluster_size]
-                    iteration += 1
-            for j in range(num_workers):
-                workers[j].spearman_score_1 = results[j][0]
-                workers[j].best_local = results[j][1]
-                workers[j].velocities = results[j][2]
-                workers[j].distances = results[j][3]
-            print(search_score)
+        for cycle in range(cycles):
 
-        #best_global = np.zeros([len(distance_map), 3])
-        for i in range(num_workers):
-            workers[i].velocities = np.random.randn(workers[i].length, 3)*3
-        for i in range(0, homing_phase_epochs):
-            partial_home = partial(homing_wrapper, distance_map, best_global, i)
-            results = np.asarray(p.map(partial_home, workers))
-            for j in range(num_workers):
-                if results[j][0] > homing_score:
-                    homing_score = results[j][0]
-                    best_global = results[j][1]
-            for j in range(num_workers):
-                workers[j].spearman_score_2 = results[j][0]
-                workers[j].best_local = results[j][1]
-                workers[j].cluster_velocities = results[j][2]
-                workers[j].distances = results[j][3]
-            print(homing_score)
+            # initialize search variables
+            search_score = np.zeros(ceil(length / cluster_size))
+            best_global = np.zeros([len(distance_map), 3])
+            homing_score = 0
+            anneal_score = 0
 
-        for i in range(0, anneal_phase_epochs):
-            partial_anneal = partial(anneal_wrapper, distance_map)
-            results = np.asarray(p.map(partial_anneal, workers))
+# ----------------------------------------------------------------------------------------------------------------------
+# Search phase looks for the best 3D structure for each cluster
+# ----------------------------------------------------------------------------------------------------------------------
+            for i in range(0, search_phase_epochs):
+                partial_search = partial(wrapper, distance_map, best_global, i)
+                results = np.asarray(p.map(partial_search, workers))
+                for j in range(num_workers):
+                    iteration = 0
+                    for k in range(0, length, cluster_size):
+                        if results[j][0][iteration] > search_score[iteration]:
+                            search_score[iteration] = results[j][0][iteration]
+                            best_global[k:k+cluster_size] = results[j][1][k:k+cluster_size]
+                        iteration += 1
+                for j in range(num_workers):
+                    workers[j].spearman_score_1 = results[j][0]
+                    workers[j].best_local = results[j][1]
+                    workers[j].velocities = results[j][2]
+                    workers[j].distances = results[j][3]
+                print(search_score)
             for j in range(num_workers):
-                if results[j][0] > anneal_score:
-                    anneal_score = results[j][0]
-                    best_global = results[j][1]
-            for j in range(num_workers):
-                workers[j].spearman_score_2 = results[j][0]
-                workers[j].best_local = results[j][1]
-                workers[j].distances = results[j][2]
+                workers[j].velocities = np.random.randn(length, 3)
+# ----------------------------------------------------------------------------------------------------------------------
+# Homing phase moves clusters to find their optimal location
+# ----------------------------------------------------------------------------------------------------------------------
 
+            for i in range(num_workers):
+                workers[i].velocities = np.random.randn(workers[i].length, 3)*3
+            for i in range(0, homing_phase_epochs):
+                partial_home = partial(homing_wrapper, distance_map, best_global, i)
+                results = np.asarray(p.map(partial_home, workers))
+                for j in range(num_workers):
+                    if results[j][0] > homing_score:
+                        homing_score = results[j][0]
+                        best_global = results[j][1]
+                for j in range(num_workers):
+                    workers[j].spearman_score_2 = results[j][0]
+                    workers[j].best_local = results[j][1]
+                    workers[j].cluster_velocities = results[j][2]
+                    workers[j].distances = results[j][3]
+                print(homing_score)
+            for j in range(num_workers):
+                workers[j].cluster_velocities = np.random.randn(ceil(length/cluster_size), 3)
+# ----------------------------------------------------------------------------------------------------------------------
+# Anneal phase mends large gaps in the structure
+# ----------------------------------------------------------------------------------------------------------------------
+            for i in range(0, anneal_phase_epochs):
+            #if cycle ==cycles - 1:
+                partial_anneal = partial(anneal_wrapper, distance_map)
+                results = np.asarray(p.map(partial_anneal, workers))
+                for j in range(num_workers):
+                    if results[j][0] > anneal_score:
+                        anneal_score = results[j][0]
+                        best_global = results[j][1]
+                for j in range(num_workers):
+                    workers[j].spearman_score_2 = results[j][0]
+                    workers[j].best_local = results[j][1]
+                    workers[j].distances = results[j][2]
+            anneal_phase_epochs = 0
     #np.savetxt("BestGuess.txt", best_global)
     local_distance_map = np.zeros([length, length])
 
+# ----------------------------------------------------------------------------------------------------------------------
+# Save results
+# ----------------------------------------------------------------------------------------------------------------------
     for i in range(length):
         for j in range(i, length):
             local_distance_map[j][i] = local_distance_map[i][j] = \

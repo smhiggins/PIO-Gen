@@ -23,8 +23,15 @@ PIO-Gen
 * output: example outputs
 * data: example inputs
 
-
 **2.	Input matrix file format:**
+-----------------------------------------------------------
+Requires:
+* functools
+* numpy
+* scipy
+* sklearn
+
+**3.	Input matrix file format:**
 -----------------------------------------------------------
 PIO-Gen allows for one format:
 * Square Matrix Input format: The square matrix is a tab seperated N by N contact matrix derived.
@@ -33,13 +40,13 @@ PIO-Gen allows for one format:
 **4.	Usage:**
 -----------------------------------------------------------
 **4.1. 	Python:** <br />
-To run the tool 	 **python PIO-Gen.py <input_path> <output_path> <conversion factor> <cluster size>** 
+To run the tool 	 **python PIO-Gen.py <input_path> <output_path> <conversion_factor> <cluster_size>** 
 
 - Parameters:
 	+ input_path: path to input matrix
 	+ output_path: path to output (Do not use an extention they are automatically added)
-	+ conversion factor: Desired conversion facter. Lower values tend to preform better on simulated data.
-	+ cluster size: the number of bins that are compaired when searching for optimum 3d shape. Must be a multiple of the matrix size.
+	+ conversion_factor: Desired conversion facter. Lower values tend to preform better on simulated data.
+	+ cluster_size: the number of bins that are compaired when searching for optimum 3d shape. Must be a multiple of the matrix size.
 
 Example:
 python PIO-Gen.py Data/regular70.txt output/test 0.4 10

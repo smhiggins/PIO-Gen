@@ -30,7 +30,7 @@ class Pigeon:
             self.distances[i][0] = self.distances[i-1][0] + spread
             #self.distances[i][1] = random.random()
             #self.distances[i][2] = random.random()
-        self.max_distance = .06
+        self.max_distance = .4
         self.map_factor = .01
         self.rnd = random.random()
         self.best_local = self.distances
@@ -43,13 +43,19 @@ class Pigeon:
         prev_velocities = self.velocities
         prev_distances = self.distances
         local_distance_map = np.zeros([self.length, self.length])
+        spring = .1
+
         if epoch == 0:
             best_global = self.best_local
-
         for i in range(self.length):
+            corrective_vel = np.zeros(3)
+            if i > 0:
+                temp = euclidean_distance(prev_distances[i-1], prev_distances[i])
+                if temp > self.max_distance:
+                    corrective_vel = (self.distances[i - 1] - self .distances[i]) * spring
             for j in range(3):
                 self.velocities[i][j] = prev_velocities[i][j] * exp(-epoch * self.map_factor) + self.rnd * \
-                                        ((self.best_local[i][j] + best_global[i][j])/2 - self.distances[i][j])
+                                        ((self.best_local[i][j] + best_global[i][j])/2 - self.distances[i][j]) + corrective_vel[j]
                 self.distances[i][j] = prev_distances[i][j] + self.velocities[i][j]
 
         for i in range(self.length):
@@ -113,8 +119,8 @@ class Pigeon:
                 distance_adjustment = self.distances[i - 1] - self .distances[i]
 
             for j in range(3):
-                self.distances[i][j] = self.distances[i][j] + distance_adjustment[j]
-        print(distance_adjustment)
+                self.distances[i][j] = self.distances[i][j] + distance_adjustment[j] + 0.1
+
         for i in range(self.length):
             for j in range(i, self.length):
                 local_distance_map[j][i] = local_distance_map[i][j] = \
