@@ -110,26 +110,3 @@ class Pigeon:
             self.best_local = self.distances
 
         return self.spearman_score_2, self.best_local, self.cluster_velocities, self.distances
-
-    def anneal_phase(self, distance_map):
-        local_distance_map = np.zeros([self.length, self.length])
-        distance_adjustment = np.zeros(3)
-        for i in range(self.length):
-            if i % self.cluster_size == 0 and i != 0:
-                distance_adjustment = self.distances[i - 1] - self .distances[i]
-
-            for j in range(3):
-                self.distances[i][j] = self.distances[i][j] + distance_adjustment[j] + 0.1
-
-        for i in range(self.length):
-            for j in range(i, self.length):
-                local_distance_map[j][i] = local_distance_map[i][j] = \
-                    euclidean_distance(self.distances[i], self.distances[j])
-
-        nas = np.logical_or(np.isnan(distance_map), np.isnan(local_distance_map))
-        score = stats.spearmanr(distance_map[~nas], local_distance_map[~nas])
-
-        if score.correlation >= self.spearman_score_3:
-            self.spearman_score_3 = score.correlation
-            self.best_local = self.distances
-        return self.spearman_score_3, self.best_local, self.distances

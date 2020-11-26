@@ -45,7 +45,7 @@ To run the tool 	 **python PIO-Gen.py <input_path> <output_path> <conversion_fac
 - Parameters:
 	+ input_path: path to input matrix
 	+ output_path: path to output (Do not use an extention they are automatically added)
-	+ conversion_factor: Desired conversion facter. Lower values tend to preform better on simulated data.
+	+ conversion_factor: Desired conversion facter. Values between 0.1 and .4 have tested the best.
 	+ cluster_size: the number of bins that are compaired when searching for optimum 3d shape. Must be a multiple of the matrix size.
 
 Example:

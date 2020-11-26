@@ -8,7 +8,7 @@ def euclidean_distance(vector_one, vector_two):
                      pow(vector_one[2] - vector_two[2], 2))
 
 
-with open('regularstructre.txt', 'r') as f:
+with open('Data/regularstructre.txt', 'r') as f:
     best_global = [[float(num) for num in line.split(',')] for line in f]
 with open('regular90.txt', 'r') as f:
     contact_matrix = np.genfromtxt(f, delimiter="\t")

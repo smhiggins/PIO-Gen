@@ -1,5 +1,5 @@
 3D CHROMOSOME MODELING BY PIOGEN
-Conversion factor: 0.4
-Spearman: 0.5236637190203117
-Pearson: 0.5466442760481878
-RMSE: 2488.8782803918266
+Conversion factor: 0.1
+Spearman: Calculated Distance Map vs Predicted Distance Map: 0.5583684538291472
+Pearson: Calculated Distance Map vs Predicted Distance Map: 0.6139632283265996
+RMSE: Calculated Distance Map vs Predicted Distance Map: 1519.833978837189

@@ -17,10 +17,10 @@ else:
     output_path = sys.argv[2]
     alpha = float(sys.argv[3])
     cluster_size = int(sys.argv[4])
-num_workers = 200
+
+num_workers = 1000
 search_phase_epochs = 50
 homing_phase_epochs = 50
-anneal_phase_epochs = 0
 cycles = 5
 
 # extract dense matrix from tab delimited square matrix
@@ -42,10 +42,6 @@ def homing_wrapper(distance, best, epoch, pigeon):
     return pigeon.homing_phase(distance, best, epoch)
 
 
-def anneal_wrapper(distance, pigeon):
-    return pigeon.anneal_phase(distance)
-
-
 def euclidean_distance(vector_one, vector_two):
     return sqrt(pow(vector_one[0] - vector_two[0], 2) + pow(vector_one[1] - vector_two[1], 2) +
                      pow(vector_one[2] - vector_two[2], 2))
@@ -59,8 +55,6 @@ if __name__ == '__main__':
     print("Beginning on alpha. " + str(alpha))
     distance_map = np.power(contact_matrix, -alpha)
     distance_map[distance_map == np.inf] = np.nan
-    #np.savetxt("Distance.txt", distance_map)
-
     workers = []
     length = len(distance_map)
 
@@ -94,15 +88,16 @@ if __name__ == '__main__':
                     workers[j].best_local = results[j][1]
                     workers[j].velocities = results[j][2]
                     workers[j].distances = results[j][3]
+                print("Search Phase" + str(i+1) + " of " + str(search_phase_epochs)
+                      + " in " + str(cycle) + " of " + str(cycles))
                 print(search_score)
             for j in range(num_workers):
                 workers[j].velocities = np.random.randn(length, 3)
+
 # ----------------------------------------------------------------------------------------------------------------------
 # Homing phase moves clusters to find their optimal location
 # ----------------------------------------------------------------------------------------------------------------------
 
-            for i in range(num_workers):
-                workers[i].velocities = np.random.randn(workers[i].length, 3)*3
             for i in range(0, homing_phase_epochs):
                 partial_home = partial(homing_wrapper, distance_map, best_global, i)
                 results = np.asarray(p.map(partial_home, workers))
@@ -115,51 +110,41 @@ if __name__ == '__main__':
                     workers[j].best_local = results[j][1]
                     workers[j].cluster_velocities = results[j][2]
                     workers[j].distances = results[j][3]
+                print("Homing Phase: " + str(i+1) + " of " + str(homing_phase_epochs)
+                      + " in " + str(cycle) + " of " + str(cycles))
                 print(homing_score)
             for j in range(num_workers):
                 workers[j].cluster_velocities = np.random.randn(ceil(length/cluster_size), 3)
-# ----------------------------------------------------------------------------------------------------------------------
-# Anneal phase mends large gaps in the structure
-# ----------------------------------------------------------------------------------------------------------------------
-            for i in range(0, anneal_phase_epochs):
-            #if cycle ==cycles - 1:
-                partial_anneal = partial(anneal_wrapper, distance_map)
-                results = np.asarray(p.map(partial_anneal, workers))
-                for j in range(num_workers):
-                    if results[j][0] > anneal_score:
-                        anneal_score = results[j][0]
-                        best_global = results[j][1]
-                for j in range(num_workers):
-                    workers[j].spearman_score_2 = results[j][0]
-                    workers[j].best_local = results[j][1]
-                    workers[j].distances = results[j][2]
-            anneal_phase_epochs = 0
-    #np.savetxt("BestGuess.txt", best_global)
-    local_distance_map = np.zeros([length, length])
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Save results
 # ----------------------------------------------------------------------------------------------------------------------
+    local_distance_map = np.zeros([length, length])
     for i in range(length):
         for j in range(i, length):
             local_distance_map[j][i] = local_distance_map[i][j] = \
                 euclidean_distance(best_global[i], best_global[j])
+    with open('Data/regularstructre.txt', 'r') as f:
+        true_structure = [[float(num) for num in line.split(',')] for line in f]
+    true_structure = np.asarray(true_structure)
     nas = np.logical_or(np.isnan(distance_map), np.isnan(local_distance_map))
-    sp_score = stats.spearmanr(distance_map[~nas], local_distance_map[~nas])
-    p_score = stats.pearsonr(distance_map[~nas], local_distance_map[~nas])
-    r_score = rmse(distance_map[~nas], local_distance_map[~nas])
-    print("Spearman:")
-    print(sp_score[0])
-    print("Pearson:")
-    print(p_score[0])
-    print("RMSE:")
-    print(r_score)
+    map_sp_score = stats.spearmanr(distance_map[~nas], local_distance_map[~nas])
+    map_p_score = stats.pearsonr(distance_map[~nas], local_distance_map[~nas])
+    map_r_score = rmse(distance_map[~nas], local_distance_map[~nas])
+
+    print("Spearman: Calculated Distance Map vs Predicted Distance Map")
+    print(map_sp_score[0])
+    print("Pearson: Calculated Distance Map vs Predicted Distance Map")
+    print(map_p_score[0])
+    print("RMSE: Calculated Distance Map vs Predicted Distance Map")
+    print(map_r_score)
+
     with open(output_path + ".log", 'w', newline='') as f:
         f.write("3D CHROMOSOME MODELING BY PIOGEN\n")
         f.write("Conversion factor: {}\n".format(alpha))
-        f.write("Spearman: {}\n".format(sp_score[0]))
-        f.write("Pearson: {}\n".format(p_score[0]))
-        f.write("RMSE: {}\n".format(r_score))
+        f.write("Spearman: Calculated Distance Map vs Predicted Distance Map: {}\n".format(map_sp_score[0]))
+        f.write("Pearson: Calculated Distance Map vs Predicted Distance Map: {}\n".format(map_p_score[0]))
+        f.write("RMSE: Calculated Distance Map vs Predicted Distance Map: {}\n".format(map_r_score))
 
     with open(output_path + ".pdb", 'w', newline='') as f:
         f.write("3D CHROMOSOME MODELING BY PIOGEN\n")
