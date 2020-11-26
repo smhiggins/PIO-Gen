@@ -22,7 +22,7 @@ search_phase_epochs = 50
 homing_phase_epochs = 50
 anneal_phase_epochs = 0
 cycles = 5
-cluster_size = 5
+
 # extract dense matrix from tab delimited square matrix
 with open(input_path, 'r') as f:
     contact_matrix = np.genfromtxt(f, delimiter="\t")
