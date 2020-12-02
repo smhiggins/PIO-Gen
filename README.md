@@ -28,13 +28,14 @@ PIO-Gen
 Requires:
 * functools
 * numpy
+* pandas
 * scipy
 * sklearn
 
 **3.	Input matrix file format:**
 -----------------------------------------------------------
 PIO-Gen allows for one format:
-* Square Matrix Input format: The square matrix is a tab seperated N by N contact matrix derived.
+* Square Matrix Input format: The square matrix is a tab seperated N by N contact matrix.
 
 
 **4.	Usage:**

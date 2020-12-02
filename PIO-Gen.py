@@ -6,6 +6,7 @@ from scipy import stats
 from workers import Pigeon
 from multiprocessing import Pool
 from sklearn import metrics
+import pandas as pd
 import os
 
 
@@ -18,10 +19,11 @@ else:
     alpha = float(sys.argv[3])
     cluster_size = int(sys.argv[4])
 
-num_workers = 1000
+num_workers = 200
 search_phase_epochs = 50
 homing_phase_epochs = 50
 cycles = 5
+
 
 # extract dense matrix from tab delimited square matrix
 with open(input_path, 'r') as f:
@@ -30,8 +32,6 @@ with open(input_path, 'r') as f:
 # delete last column if nan
 if np.isnan(contact_matrix[0][len(contact_matrix[0]) - 1]):
     contact_matrix = np.delete(contact_matrix, len(contact_matrix[0]) - 1, 1)
-
-
 
 
 def wrapper(distance, best, epoch, pigeon):
@@ -88,8 +88,8 @@ if __name__ == '__main__':
                     workers[j].best_local = results[j][1]
                     workers[j].velocities = results[j][2]
                     workers[j].distances = results[j][3]
-                print("Search Phase" + str(i+1) + " of " + str(search_phase_epochs)
-                      + " in " + str(cycle) + " of " + str(cycles))
+                print("Search Phase: " + str(i+1) + " of " + str(search_phase_epochs)
+                      + " in " + str(cycle+1) + " of " + str(cycles))
                 print(search_score)
             for j in range(num_workers):
                 workers[j].velocities = np.random.randn(length, 3)
@@ -105,13 +105,12 @@ if __name__ == '__main__':
                     if results[j][0] > homing_score:
                         homing_score = results[j][0]
                         best_global = results[j][1]
-                for j in range(num_workers):
                     workers[j].spearman_score_2 = results[j][0]
                     workers[j].best_local = results[j][1]
                     workers[j].cluster_velocities = results[j][2]
                     workers[j].distances = results[j][3]
                 print("Homing Phase: " + str(i+1) + " of " + str(homing_phase_epochs)
-                      + " in " + str(cycle) + " of " + str(cycles))
+                      + " in " + str(cycle+1) + " of " + str(cycles))
                 print(homing_score)
             for j in range(num_workers):
                 workers[j].cluster_velocities = np.random.randn(ceil(length/cluster_size), 3)
@@ -125,26 +124,45 @@ if __name__ == '__main__':
             local_distance_map[j][i] = local_distance_map[i][j] = \
                 euclidean_distance(best_global[i], best_global[j])
     with open('Data/regularstructre.txt', 'r') as f:
-        true_structure = [[float(num) for num in line.split(',')] for line in f]
-    true_structure = np.asarray(true_structure)
-    nas = np.logical_or(np.isnan(distance_map), np.isnan(local_distance_map))
-    map_sp_score = stats.spearmanr(distance_map[~nas], local_distance_map[~nas])
-    map_p_score = stats.pearsonr(distance_map[~nas], local_distance_map[~nas])
-    map_r_score = rmse(distance_map[~nas], local_distance_map[~nas])
+        true_struct = [[float(num) for num in line.split(',')] for line in f]
+    true_struct = np.asarray(true_struct)
+    true_distance_map = np.zeros([length, length])
+    for i in range(length):
+        for j in range(i, length):
+            true_distance_map[j][i] = true_distance_map[i][j] = \
+                euclidean_distance(true_struct[i], true_struct[j])
+    # find average spearman score by row
+    sp_score = stats.spearmanr(true_distance_map, local_distance_map, axis=1)[0]
+    sp_sum = 0
+    for i in range(100):
+        sp_sum += sp_score[i][i+100]
+    sp_sum = sp_sum/100
+    # find average pearson score by row
+    pr_score = np.corrcoef(true_distance_map, local_distance_map)
+    pr_sum = 0
+    for i in range(100):
+        pr_sum += pr_score[i][i + 100]
+    pr_sum = pr_sum / 100
+    # find RMSE
+    rmse_sum = rmse(best_global, true_struct)
 
+    print("Spearman: " + str(sp_sum))
+    print("Pearson: " + str(pr_sum))
+    print("RMSE: " + str(rmse_sum))
+    '''
     print("Spearman: Calculated Distance Map vs Predicted Distance Map")
     print(map_sp_score[0])
     print("Pearson: Calculated Distance Map vs Predicted Distance Map")
     print(map_p_score[0])
     print("RMSE: Calculated Distance Map vs Predicted Distance Map")
     print(map_r_score)
-
+    '''
     with open(output_path + ".log", 'w', newline='') as f:
         f.write("3D CHROMOSOME MODELING BY PIOGEN\n")
         f.write("Conversion factor: {}\n".format(alpha))
-        f.write("Spearman: Calculated Distance Map vs Predicted Distance Map: {}\n".format(map_sp_score[0]))
-        f.write("Pearson: Calculated Distance Map vs Predicted Distance Map: {}\n".format(map_p_score[0]))
-        f.write("RMSE: Calculated Distance Map vs Predicted Distance Map: {}\n".format(map_r_score))
+        f.write("Spearman: True Distance Map vs Predicted Distance Map: {}\n".format(sp_sum))
+        f.write("Pearson: True Distance Map vs Predicted Distance Map: {}\n".format(pr_sum))
+        f.write("RMSE: True Distance Map vs Predicted Distance Map: {}\n".format(rmse_sum))
 
     with open(output_path + ".pdb", 'w', newline='') as f:
         f.write("3D CHROMOSOME MODELING BY PIOGEN\n")

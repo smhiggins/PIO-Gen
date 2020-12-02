@@ -1,0 +1,4 @@
+Input: Data/Simulated/HSA/regular90.txt
+Spearman: True Distance Map vs Predicted Distance Map: 0.9882189018901893
+Pearson: True Distance Map vs Predicted Distance Map: 0.9928257850318535
+RMSE: True Distance Map vs Predicted Distance Map: 10.532115607597381
