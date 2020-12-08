@@ -20,9 +20,9 @@ else:
     cluster_size = int(sys.argv[4])
 
 num_workers = 200
-search_phase_epochs = 50
-homing_phase_epochs = 50
-cycles = 5
+search_phase_epochs = 25
+homing_phase_epochs = 25
+cycles = 2
 
 
 # extract dense matrix from tab delimited square matrix
@@ -53,6 +53,9 @@ def rmse(true_matrix, prediction_matrix):
 
 if __name__ == '__main__':
     print("Beginning on alpha. " + str(alpha))
+    padding = ceil(len(contact_matrix) / cluster_size) * cluster_size - len(contact_matrix)
+    if padding != 0:
+        contact_matrix = np.pad(contact_matrix, (0, padding), mode='constant')
     distance_map = np.power(contact_matrix, -alpha)
     distance_map[distance_map == np.inf] = np.nan
     workers = []
@@ -83,7 +86,6 @@ if __name__ == '__main__':
                             search_score[iteration] = results[j][0][iteration]
                             best_global[k:k+cluster_size] = results[j][1][k:k+cluster_size]
                         iteration += 1
-                for j in range(num_workers):
                     workers[j].spearman_score_1 = results[j][0]
                     workers[j].best_local = results[j][1]
                     workers[j].velocities = results[j][2]
@@ -125,12 +127,14 @@ if __name__ == '__main__':
                 euclidean_distance(best_global[i], best_global[j])
     with open('Data/regularstructre.txt', 'r') as f:
         true_struct = [[float(num) for num in line.split(',')] for line in f]
+    '''
     true_struct = np.asarray(true_struct)
     true_distance_map = np.zeros([length, length])
     for i in range(length):
         for j in range(i, length):
             true_distance_map[j][i] = true_distance_map[i][j] = \
                 euclidean_distance(true_struct[i], true_struct[j])
+    
     # find average spearman score by row
     sp_score = stats.spearmanr(true_distance_map, local_distance_map, axis=1)[0]
     sp_sum = 0
@@ -150,19 +154,25 @@ if __name__ == '__main__':
     print("Pearson: " + str(pr_sum))
     print("RMSE: " + str(rmse_sum))
     '''
+    nas = np.logical_or(np.isnan(distance_map), np.isnan(local_distance_map))
+    map_sp_score = stats.spearmanr(distance_map[~nas], local_distance_map[~nas])
+    map_p_score = stats.pearsonr(distance_map[~nas], local_distance_map[~nas])
+    map_r_score = rmse(distance_map[~nas], local_distance_map[~nas])
+
     print("Spearman: Calculated Distance Map vs Predicted Distance Map")
     print(map_sp_score[0])
     print("Pearson: Calculated Distance Map vs Predicted Distance Map")
     print(map_p_score[0])
     print("RMSE: Calculated Distance Map vs Predicted Distance Map")
     print(map_r_score)
-    '''
+
+
     with open(output_path + ".log", 'w', newline='') as f:
         f.write("3D CHROMOSOME MODELING BY PIOGEN\n")
         f.write("Conversion factor: {}\n".format(alpha))
-        f.write("Spearman: True Distance Map vs Predicted Distance Map: {}\n".format(sp_sum))
-        f.write("Pearson: True Distance Map vs Predicted Distance Map: {}\n".format(pr_sum))
-        f.write("RMSE: True Distance Map vs Predicted Distance Map: {}\n".format(rmse_sum))
+        f.write("Spearman: True Distance Map vs Predicted Distance Map: {}\n".format(map_sp_score[0]))
+        f.write("Pearson: True Distance Map vs Predicted Distance Map: {}\n".format(map_p_score[0]))
+        f.write("RMSE: True Distance Map vs Predicted Distance Map: {}\n".format(map_r_score))
 
     with open(output_path + ".pdb", 'w', newline='') as f:
         f.write("3D CHROMOSOME MODELING BY PIOGEN\n")

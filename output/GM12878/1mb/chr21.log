@@ -1,0 +1,5 @@
+3D CHROMOSOME MODELING BY PIOGEN
+Conversion factor: 0.1
+Spearman: True Distance Map vs Predicted Distance Map: 0.8368417690200324
+Pearson: True Distance Map vs Predicted Distance Map: 0.8309793372166192
+RMSE: True Distance Map vs Predicted Distance Map: 190.18604790340288
