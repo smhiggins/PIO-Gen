@@ -26,7 +26,7 @@ with open(input_path, 'r') as f:
 coordinates = []
 
 # range needs to change if there is/isn't a title
-for i in range(0, 100):
+for i in range(1, 101):
     temp = lines[i][31:54]
     temp = (re.sub("\s+", ",", temp.strip()))
     coordinates.append(temp.split(','))
@@ -36,11 +36,6 @@ np_input = np_str.astype(np.float)
 
 length = 100
 
-local_distance_map = np.zeros([length, length])
-for i in range(length):
-    for j in range(i, length):
-        local_distance_map[j][i] = local_distance_map[i][j] = \
-            euclidean_distance(np_input[i], np_input[j])
 with open('Data/regularstructre.txt', 'r') as f:
     true_struct = [[float(num) for num in line.split(',')] for line in f]
 true_struct = np.asarray(true_struct)
@@ -49,6 +44,22 @@ for i in range(length):
     for j in range(i, length):
         true_distance_map[j][i] = true_distance_map[i][j] = \
             euclidean_distance(true_struct[i], true_struct[j])
+
+scale = []
+scale.append(abs((max(np_input[:,0]) -min(np_input[:,0]))/(max(true_struct[:,0]) - min(true_struct[:,0]))))
+scale.append(abs((max(np_input[:,1]) -min(np_input[:,1]))/(max(true_struct[:,1]) - min(true_struct[:,1]))))
+scale.append(abs((max(np_input[:,2]) -min(np_input[:,2]))/(max(true_struct[:,2]) - min(true_struct[:,2]))))
+scale = np.asarray(scale)
+
+np_input = np_input/scale
+center = true_struct[0] - np_input[0]
+np_input = np_input + center
+local_distance_map = np.zeros([length, length])
+for i in range(length):
+    for j in range(i, length):
+        local_distance_map[j][i] = local_distance_map[i][j] = \
+            euclidean_distance(np_input[i], np_input[j])
+
 
 sp_score = stats.spearmanr(true_distance_map, local_distance_map, axis=1)[0]
 sp_sum = 0
@@ -68,7 +79,7 @@ print("Spearman: " + str(sp_sum))
 print("Pearson: " + str(pr_sum))
 print("RMSE: " + str(rmse_sum))
 
-with open(input_path[:-4] + ".log", 'w', newline='') as f:
+with open(input_path[:-4] + "_scaled.log", 'w', newline='') as f:
     f.write("Input: {}\n".format(input_path))
     f.write("Spearman: True Distance Map vs Predicted Distance Map: {}\n".format(sp_sum))
     f.write("Pearson: True Distance Map vs Predicted Distance Map: {}\n".format(pr_sum))

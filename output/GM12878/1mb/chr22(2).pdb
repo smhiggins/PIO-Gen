@@ -1,0 +1,80 @@
+3D CHROMOSOME MODELING BY PIOGEN
+ATOM      1   CA MET A1         -9.368  -7.907   1.217  0.20 10.00
+ATOM      2   CA MET A2         -9.192  -9.109   1.802  0.20 10.00
+ATOM      3   CA MET A3         -8.632  -8.062   2.320  0.20 10.00
+ATOM      4   CA MET A4         -4.660  -4.237  -1.104  0.20 10.00
+ATOM      5   CA MET A5         -0.543  -0.870  -1.834  0.20 10.00
+ATOM      6   CA MET A6          0.648   1.525  -0.514  0.20 10.00
+ATOM      7   CA MET A7          0.494   2.706  -0.279  0.20 10.00
+ATOM      8   CA MET A8         -2.018   2.571  -0.173  0.20 10.00
+ATOM      9   CA MET A9         -2.650   1.616   1.297  0.20 10.00
+ATOM     10   CA MET A10        -3.012  -1.380   2.142  0.20 10.00
+ATOM     11   CA MET A11        -3.882  -2.911  -0.979  0.20 10.00
+ATOM     12   CA MET A12        -3.295  -2.247  -1.125  0.20 10.00
+ATOM     13   CA MET A13        -5.400   0.185  -0.504  0.20 10.00
+ATOM     14   CA MET A14        -5.012   0.646  -3.069  0.20 10.00
+ATOM     15   CA MET A15        -3.452   0.682  -4.435  0.20 10.00
+ATOM     16   CA MET A16        -3.205   1.330  -5.129  0.20 10.00
+ATOM     17   CA MET A17        -3.044   1.290  -4.095  0.20 10.00
+ATOM     18   CA MET A18        -2.489  -0.430  -1.033  0.20 10.00
+ATOM     19   CA MET A19        -2.906  -3.166   1.063  0.20 10.00
+ATOM     20   CA MET A20        -3.613  -4.750  -0.444  0.20 10.00
+ATOM     21   CA MET A21         4.391   0.624  -7.266  0.20 10.00
+ATOM     22   CA MET A22         9.142   0.494  -8.884  0.20 10.00
+ATOM     23   CA MET A23        11.102  -0.575  -8.774  0.20 10.00
+ATOM     24   CA MET A24        12.094  -3.363 -10.766  0.20 10.00
+ATOM     25   CA MET A25        10.477  -8.414 -13.474  0.20 10.00
+ATOM     26   CA MET A26         8.406  -7.632 -14.230  0.20 10.00
+ATOM     27   CA MET A27         8.436  -5.572 -14.089  0.20 10.00
+ATOM     28   CA MET A28         8.371  -5.486 -12.020  0.20 10.00
+ATOM     29   CA MET A29         9.002  -3.256  -7.656  0.20 10.00
+ATOM     30   CA MET A30         8.214  -0.834  -2.737  0.20 10.00
+ATOM     31   CA MET A31         6.119  -3.669   0.480  0.20 10.00
+ATOM     32   CA MET A32         6.487  -6.915   3.563  0.20 10.00
+ATOM     33   CA MET A33         8.507  -8.739   4.312  0.20 10.00
+ATOM     34   CA MET A34        10.832  -9.646   4.975  0.20 10.00
+ATOM     35   CA MET A35         9.830 -10.151   4.985  0.20 10.00
+ATOM     36   CA MET A36         9.030 -12.234   0.825  0.20 10.00
+ATOM     37   CA MET A37        11.239 -12.033  -2.136  0.20 10.00
+ATOM     38   CA MET A38        10.917 -11.190  -4.352  0.20 10.00
+ATOM     39   CA MET A39        11.415  -9.392  -3.361  0.20 10.00
+ATOM     40   CA MET A40        10.322  -8.609  -0.538  0.20 10.00
+CONECT    1    2
+CONECT    2    3
+CONECT    3    4
+CONECT    4    5
+CONECT    5    6
+CONECT    6    7
+CONECT    7    8
+CONECT    8    9
+CONECT    9   10
+CONECT   10   11
+CONECT   11   12
+CONECT   12   13
+CONECT   13   14
+CONECT   14   15
+CONECT   15   16
+CONECT   16   17
+CONECT   17   18
+CONECT   18   19
+CONECT   19   20
+CONECT   20   21
+CONECT   21   22
+CONECT   22   23
+CONECT   23   24
+CONECT   24   25
+CONECT   25   26
+CONECT   26   27
+CONECT   27   28
+CONECT   28   29
+CONECT   29   30
+CONECT   30   31
+CONECT   31   32
+CONECT   32   33
+CONECT   33   34
+CONECT   34   35
+CONECT   35   36
+CONECT   36   37
+CONECT   37   38
+CONECT   38   39
+CONECT   39   40

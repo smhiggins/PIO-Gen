@@ -1,0 +1,4 @@
+Input: output/simulated_output/PIO-Gen/regular90.pdb
+Spearman: True Distance Map vs Predicted Distance Map: 0.837260726072607
+Pearson: True Distance Map vs Predicted Distance Map: 0.8680433395329232
+RMSE: True Distance Map vs Predicted Distance Map: 11.79949120759789

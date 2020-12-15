@@ -1,0 +1,4 @@
+Input: Data/Simulated/ChromSDE/regular25.pos
+Spearman: True Distance Map vs Predicted Distance Map: 0.25963264326432645
+Pearson: True Distance Map vs Predicted Distance Map: 0.3157352397521685
+RMSE: True Distance Map vs Predicted Distance Map: 10.866677986055025

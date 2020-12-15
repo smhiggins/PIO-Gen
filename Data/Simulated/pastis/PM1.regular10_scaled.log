@@ -1,0 +1,4 @@
+Input: Data/Simulated/pastis/PM1.regular10.pdb
+Spearman: True Distance Map vs Predicted Distance Map: 0.40134929492949306
+Pearson: True Distance Map vs Predicted Distance Map: 0.44629772318495503
+RMSE: True Distance Map vs Predicted Distance Map: 7.073137944983611

@@ -8,6 +8,7 @@ from multiprocessing import Pool
 from sklearn import metrics
 import pandas as pd
 import os
+import copy
 
 
 if len(sys.argv) < 5:

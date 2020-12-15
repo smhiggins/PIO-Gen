@@ -1,0 +1,4 @@
+Input: output/simulated_output/3DMax/sparse70_1606869699219.pdb
+Spearman: True Distance Map vs Predicted Distance Map: 0.8968512451245124
+Pearson: True Distance Map vs Predicted Distance Map: 0.9143266389476956
+RMSE: True Distance Map vs Predicted Distance Map: 13.127002391000802

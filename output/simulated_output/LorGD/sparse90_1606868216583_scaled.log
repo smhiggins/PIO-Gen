@@ -1,0 +1,4 @@
+Input: output/simulated_output/LorGD/sparse90_1606868216583.pdb
+Spearman: True Distance Map vs Predicted Distance Map: 0.9019039903990402
+Pearson: True Distance Map vs Predicted Distance Map: 0.9279791355694872
+RMSE: True Distance Map vs Predicted Distance Map: 10.986021227971074

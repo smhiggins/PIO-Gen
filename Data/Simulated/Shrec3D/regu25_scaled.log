@@ -1,0 +1,4 @@
+Input: Data/Simulated/Shrec3D/regu25.xyz
+Spearman: True Distance Map vs Predicted Distance Map: 0.7754276627662763
+Pearson: True Distance Map vs Predicted Distance Map: 0.7934919921026156
+RMSE: True Distance Map vs Predicted Distance Map: 8.185530907495213

@@ -1,0 +1,4 @@
+Input: output/simulated_output/Chromosome3D/90_1.pdb
+Spearman: True Distance Map vs Predicted Distance Map: 0.9659733573357333
+Pearson: True Distance Map vs Predicted Distance Map: 0.9764235330388563
+RMSE: True Distance Map vs Predicted Distance Map: 10.016913392347385
